@@ -1,4 +1,4 @@
-<phpunit stopOnError="true" stopOnFailure="true" colors="true">
+<phpunit stopOnError="true" stopOnFailure="false" colors="true">
     <testsuites>
         <testsuite name="Kanboard">
             <directory>units</directory>
@@ -6,6 +6,8 @@
     </testsuites>
     <php>
         <const name="DB_DRIVER" value="mysql" />
-        <const name="DB_NAME" value="kanboard_unit_test" />
+	<const name="DB_NAME" value="kanboard_unit_test" />
+	<const name="DB_USERNAME" value="kanboard_test" />
+	<const name="DB_PASSWORD" value="pass" />
     </php>
 </phpunit>
