@@ -21,5 +21,4 @@ Credits
 -------
 
 - Main developer: Frédéric Guillot
-- [Contributors](https://github.com/kanboard/kanboard/graphs/contributors)
 - Distributed under [MIT License](https://github.com/kanboard/kanboard/blob/main/LICENSE)
