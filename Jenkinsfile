@@ -1,11 +1,6 @@
 pipeline {
     agent any
     stages {
-//         stage('Checkout'){
-//             steps{
-//                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [[$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories: true], [$class: 'WipeWorkspace']], userRemoteConfigs: [[url: 'https://github.com/SanyaAlexander/kanboard.git']]])
-//             }
-//         } 
         stage('Build') {
             steps {
                 echo 'Downloading php and all dependencies'
@@ -20,7 +15,6 @@ pipeline {
             }
         }
         stage('Test'){
-            when { equals expected: true, actual: Build }
             steps{
                 echo 'Running tests'
                 sh './vendor/bin/phpunit --config tests/units.mysql.xml'
