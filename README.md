@@ -22,6 +22,3 @@ Credits
 
 - Main developer: Frédéric Guillot
 - Distributed under [MIT License](https://github.com/kanboard/kanboard/blob/main/LICENSE)
-
-
-
