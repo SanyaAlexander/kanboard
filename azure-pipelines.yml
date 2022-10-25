@@ -47,8 +47,8 @@ stages:
   jobs:
   - job: TestJob
     steps:
-    - script: '/usr/bin/php$(phpVersion) ./vendor/bin/phpunit --config tests/units.mysql.xml'
-      displayName: 'Tests passed successfully'
+    - script: '/usr/bin/php7.3 ./vendor/bin/phpunit --config tests/units.mysql.xml'
+      displayName: 'Tests'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
