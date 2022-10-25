@@ -46,12 +46,10 @@ stages:
   displayName: Test stage
   jobs:
   - job: TestJob
-    pool:
-      vmImage: $(vmImageName)
     steps:
     - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
-      workingDirectory: $(rootFolder)
       displayName: 'Tests passed successfully'
+
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
