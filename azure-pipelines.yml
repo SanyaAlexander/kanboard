@@ -42,10 +42,16 @@ stages:
       workingDirectory: $(rootFolder)
       displayName: 'Use PHP version $(phpVersion)'
 
-    - script: composer install --no-interaction --prefer-dist
+- stage: Test
+  displayName: Test stage
+  jobs:
+  - job: TestJob
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
       workingDirectory: $(rootFolder)
-      displayName: 'Composer install'
-
+      displayName: 'Tests passed successfully'
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
