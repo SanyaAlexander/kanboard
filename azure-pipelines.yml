@@ -33,12 +33,12 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - script: |
+        sudo apt install -y php7.4 php7.4-mysql php7.4-gd php7.4-mbstring php7.4-common php7.4-opcache php7.4-cli php7.4-sqlite3 php-ldap
         sudo update-alternatives --set php /usr/bin/php$(phpVersion)
         sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
         sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
         sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
         sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
-        
         php -version
       workingDirectory: $(rootFolder)
       displayName: 'Use PHP version $(phpVersion)'
