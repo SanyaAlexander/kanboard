@@ -24,3 +24,6 @@ steps:
 
 - script: composer install --no-interaction --prefer-dist
   displayName: 'composer install'
+
+- script: './vendor/bin/phpunit --config tests/units.mysql.xml'
+  displayName: 'Tests'
