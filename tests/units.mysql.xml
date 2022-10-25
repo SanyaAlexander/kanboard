@@ -9,6 +9,6 @@
 	<const name="DB_NAME" value="kanboard_unit_test" />
 	<const name="DB_USERNAME" value="kanboard_test" />
 	<const name="DB_PASSWORD" value="pass" />
-	<const name="DB_HOSTNAME" value="10.26.0.166" />
+	<const name="DB_HOSTNAME" value="kanboard.mariadb.database.azure.com" />
     </php>
 </phpunit>
