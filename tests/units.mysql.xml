@@ -6,8 +6,8 @@
     </testsuites>
     <php>
         <const name="DB_DRIVER" value="mysql" />
-	<const name="DB_NAME" value="kanboard_unit_test" />
-	<const name="DB_USERNAME" value="kanboard_test" />
+	<const name="DB_NAME" value="test_kanboard" />
+	<const name="DB_USERNAME" value="testuser" />
 	<const name="DB_PASSWORD" value="pass" />
 	<const name="DB_HOSTNAME" value="kanboard.mariadb.database.azure.com" />
     </php>
