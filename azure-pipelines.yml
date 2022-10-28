@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/php
 
 trigger:
-- azure-pipelines
+- master
 
 resources:
   repositories:
@@ -32,5 +32,7 @@ steps:
 - script: composer install --no-interaction --prefer-dist
   displayName: 'composer install'
 
-- script: './vendor/bin/phpunit --config tests/units.mysql.xml'
+- script: |
+    ./vendor/bin/phpunit --config tests/units.mysql.xml'
+    ls tests/units
   displayName: 'Tests'
