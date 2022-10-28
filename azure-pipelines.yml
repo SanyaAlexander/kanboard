@@ -27,12 +27,11 @@ steps:
     sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
     sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
     php -version
+    ls tests/units
   displayName: 'Use PHP version $(phpVersion)'
 
 - script: composer install --no-interaction --prefer-dist
   displayName: 'composer install'
 
-- script: |
-    './vendor/bin/phpunit --config tests/units.mysql.xml'
-    'ls tests/units'
+- script: './vendor/bin/phpunit --config tests/units.mysql.xml'
   displayName: 'Tests'
