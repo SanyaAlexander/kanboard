@@ -6,6 +6,13 @@
 trigger:
 - azure-pipelines
 
+resources:
+  repositories:
+  - repository: kanboard 
+    type: git
+    name: kanboard
+    ref: azure-pipelines
+
 pool:
   vmImage: ubuntu-latest
 
