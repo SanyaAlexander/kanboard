@@ -1,3 +1,4 @@
+
 <phpunit stopOnError="true" stopOnFailure="false" colors="true">
     <testsuites>
         <testsuite name="Kanboard">
@@ -12,3 +13,4 @@
 	<const name="DB_HOSTNAME" value="kanboard.mariadb.database.azure.com" />
     </php>
 </phpunit>
+
