@@ -33,6 +33,6 @@ steps:
   displayName: 'composer install'
 
 - script: |
-    ./vendor/bin/phpunit --config tests/units.mysql.xml'
+    ./vendor/bin/phpunit --config tests/units.mysql.xml
     ls tests/units
   displayName: 'Tests'
