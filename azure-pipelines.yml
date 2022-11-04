@@ -29,7 +29,7 @@ variables:
 
 
 stages:
-- stage:
+- stage: Build
   displayName: Build
   jobs:
     - job: BuildJob
