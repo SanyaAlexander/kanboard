@@ -6,8 +6,8 @@
 trigger:
 - master
 
-pool:
-  vmImage: ubuntu-latest
+#pool:
+#  vmImage: ubuntu-latest
 
 variables:
   phpVersion: 7.4
@@ -48,18 +48,22 @@ stages:
       - script: composer install --no-interaction --prefer-dist
         displayName: 'composer install'
 
+      - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
+        displayName: 'Tests'
+      - task: ArchiveFiles@2
+        displayName: 'Archive files'
+        inputs:
+          rootFolderOrFile: '$(rootFolder)'
+          includeRootFolder: false
+          archiveType: zip
+          archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          replaceExistingArchive: true
 
+      - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        displayName: 'Upload package'
+        artifact: drop
 
-
-- stage: Test
-  displayName: Test
-  jobs:
-    - job: TestJob
-      pool:
-        vmImage: $(vmImageName)
-      steps:
-        - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
-          displayName: 'Tests'
+        
 
 - stage: Deploy
   displayName: 'Deploy Web App'
