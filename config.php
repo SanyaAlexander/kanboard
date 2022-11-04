@@ -70,13 +70,13 @@ define('DB_RUN_MIGRATIONS', true);
 define('DB_DRIVER', 'mysql');
 
 // Mysql/Postgres username
-define('DB_USERNAME', 'kanboarduser');
+define('DB_USERNAME', 'myadmin');
 
 // Mysql/Postgres password
-define('DB_PASSWORD', 'pass');
+define('DB_PASSWORD', 'pBTQ8zOK8NwKgcFkzEBB');
 
 // Mysql/Postgres hostname
-define('DB_HOSTNAME', 'localhost');
+define('DB_HOSTNAME', 'kanboard.mariadb.database.azure.com');
 
 // Mysql/Postgres database name
 define('DB_NAME', 'kanboard');
