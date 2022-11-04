@@ -47,9 +47,6 @@ stages:
 
       - script: composer install --no-interaction --prefer-dist
         displayName: 'composer install'
-
-      - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
-        displayName: 'Tests'
       - task: ArchiveFiles@2
         displayName: 'Archive files'
         inputs:
@@ -63,11 +60,34 @@ stages:
         displayName: 'Upload package'
         artifact: drop
 
-        
+
+- stage: Test
+  displayName: Test
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+    - job: TestJob
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+      - script: |
+          sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+          sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+          sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+          sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+          sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+          php -version
+        displayName: 'Use PHP version $(phpVersion)'
+
+      - script: composer install --no-interaction --prefer-dist
+        displayName: 'composer install'
+
+      - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
+        displayName: 'Tests'
 
 - stage: Deploy
   displayName: 'Deploy Web App'
-  dependsOn: Build
+  dependsOn: Test
   condition: succeeded()
   jobs:
   - deployment: DeploymentJob
