@@ -6,26 +6,88 @@
 trigger:
 - master
 
-
 pool:
   vmImage: ubuntu-latest
 
 variables:
   phpVersion: 7.4
 
-steps:
-- script: |
-    sudo update-alternatives --set php /usr/bin/php$(phpVersion)
-    sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
-    sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
-    sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
-    sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
-    php -version
-    ls tests/units
-  displayName: 'Use PHP version $(phpVersion)'
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: 'd8cfe0a6-35a9-40c8-8cbb-be8d2dd011f1'
 
-- script: composer install --no-interaction --prefer-dist
-  displayName: 'composer install'
+  # Web app name
+  webAppName: 'kanboardproject'
 
-- script: './vendor/bin/phpunit --config tests/units.mysql.xml'
-  displayName: 'Tests'
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+  # Environment name
+  environmentName: 'kanboardproject'
+
+  # Root folder under which your composer.json file is available.
+  rootFolder: $(System.DefaultWorkingDirectory)
+
+
+stages:
+- stage:
+  displayName: Build
+  jobs:
+    - job: BuildJob
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+      - script: |
+          sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+          sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+          sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+          sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+          sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+          php -version
+        displayName: 'Use PHP version $(phpVersion)'
+
+      - script: composer install --no-interaction --prefer-dist
+        displayName: 'composer install'
+      - task: ArchiveFiles@2
+        displayName: 'Archive files'
+        inputs:
+          rootFolderOrFile: '$(rootFolder)'
+          includeRootFolder: false
+          archiveType: zip
+          archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          replaceExistingArchive: true
+
+      - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        displayName: 'Upload package'
+        artifact: drop
+
+
+
+- stage: Test
+  displayName: Test
+  jobs:
+    - job: TestJob
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+        - script: './vendor/bin/phpunit --config tests/units.mysql.xml'
+          displayName: 'Tests'
+
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeploymentJob
+    pool:
+      vmImage: $(vmImageName)
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App : kanboardproject'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(webAppName)
+              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
