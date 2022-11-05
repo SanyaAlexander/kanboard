@@ -1,0 +1,74 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- terraform
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  storageRGName: 'cloud-shell-storage-westeurope'
+  storageName: 'csb10032002408143f0'
+  containerName: 'tfstate'
+  storageKey: 'terraform.pipeline.tfstate'
+
+stages:
+  - stage: validation
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'ConnectionForTF'
+              backendAzureRmResourceGroupName: '$(storageRGName)'
+              backendAzureRmStorageAccountName: '$(storageName)'
+              backendAzureRmContainerName: '$(containerName)'
+              backendAzureRmKey: '$(storageKey)'
+          - task: TerraformTaskV3@3
+            displayName: validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+  - stage: Deploy
+    condition: succeeded('validation')
+    dependsOn: validation
+    jobs:
+      - job: apply
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'ConnectionForTF'
+              backendAzureRmResourceGroupName: '$(storageRGName)'
+              backendAzureRmStorageAccountName: '$(storageName)'
+              backendAzureRmContainerName: '$(containerName)'
+              backendAzureRmKey: '$(storageKey)'
+          - task: TerraformTaskV3@3
+            displayName: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'ConnectionForTF'
+          - task: TerraformTaskV3@3
+            displayName: apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'ConnectionForTF'
