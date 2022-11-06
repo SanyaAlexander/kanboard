@@ -55,7 +55,6 @@ variable "db_admin_login" {
 variable "db_admin_password" {
     type = string
     description = "Administrator password for Database"
-    default = "592C6F4E44#"
 }
 
 variable "private_dns_zone_name" {

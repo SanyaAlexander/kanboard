@@ -6,14 +6,15 @@
 trigger:
 - terraform-trigger
 
-pool:
-  vmImage: ubuntu-latest
 
 variables:
   storageRGName: 'cloud-shell-storage-westeurope'
   storageName: 'csb10032002408143f0'
   containerName: 'tfstate'
   storageKey: 'terraform.pipeline.tfstate'
+  phpVersion: '7.4'
+  vmImageName: 'ubuntu-latest'
+  rootFolder: $(System.DefaultWorkingDirectory)
 
 stages:
   - stage: validation
@@ -65,10 +66,45 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              commandOptions: '-var "db_admin_password=$(db_admin_password)" -v'
               environmentServiceNameAzureRM: 'ConnectionForTF'
+        
           - task: TerraformTaskV3@3
             displayName: apply
             inputs:
               provider: 'azurerm'
               command: 'apply'
+              commandOptions: '-var "db_admin_password=$(db_admin_password)" -v'
               environmentServiceNameAzureRM: 'ConnectionForTF'
+  - stage: Build
+    displayName: Build
+    jobs:
+      - job: BuildJob
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+        - script: |
+            sudo apt install php$(phpVersion)
+            sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+            sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+            sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+            sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+            sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+            php -version
+          displayName: 'Use PHP version $(phpVersion)'
+
+        - script: composer install --no-interaction --prefer-dist
+          displayName: 'composer install'
+        - task: ArchiveFiles@2
+          displayName: 'Archive files'
+          inputs:
+            rootFolderOrFile: '$(rootFolder)'
+            includeRootFolder: false
+            archiveType: zip
+            archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+            replaceExistingArchive: true
+
+        - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          displayName: 'Upload package'
+          artifact: drop
+  
