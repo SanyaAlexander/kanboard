@@ -6,8 +6,6 @@
 trigger:
 - terraform-trigger
 
-pool:
-  vmImage: ubuntu-latest
 
 variables:
   storageRGName: 'cloud-shell-storage-westeurope'
@@ -15,6 +13,8 @@ variables:
   containerName: 'tfstate'
   storageKey: 'terraform.pipeline.tfstate'
   phpVersion: '7.4'
+  vmImageName: 'ubuntu-latest'
+  rootFolder: $(System.DefaultWorkingDirectory)
 
 stages:
   - stage: validation
@@ -77,6 +77,8 @@ stages:
     displayName: Build
     jobs:
       - job: BuildJob
+        pool:
+          vmImage: $(vmImageName)
         steps:
         - script: |
             sudo apt install php$(phpVersion)
