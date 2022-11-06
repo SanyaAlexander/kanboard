@@ -76,8 +76,6 @@ stages:
     displayName: Build
     jobs:
       - job: BuildJob
-        pool:
-          vmImage: $(vmImageName)
         steps:
         - script: |
             sudo update-alternatives --set php /usr/bin/php$(phpVersion)
@@ -102,3 +100,4 @@ stages:
         - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
           displayName: 'Upload package'
           artifact: drop
+  
