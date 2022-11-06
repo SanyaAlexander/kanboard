@@ -66,12 +66,15 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              commandOptions: '-var "db_admin_password=$(db_admin_password)" -v'
               environmentServiceNameAzureRM: 'ConnectionForTF'
+        
           - task: TerraformTaskV3@3
             displayName: apply
             inputs:
               provider: 'azurerm'
               command: 'apply'
+              commandOptions: '-var "db_admin_password=$(db_admin_password)" -v'
               environmentServiceNameAzureRM: 'ConnectionForTF'
   - stage: Build
     displayName: Build
