@@ -72,3 +72,33 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: 'ConnectionForTF'
+  - stage: Build
+    displayName: Build
+    jobs:
+      - job: BuildJob
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+        - script: |
+            sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+            sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+            sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+            sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+            sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+            php -version
+          displayName: 'Use PHP version $(phpVersion)'
+
+        - script: composer install --no-interaction --prefer-dist
+          displayName: 'composer install'
+        - task: ArchiveFiles@2
+          displayName: 'Archive files'
+          inputs:
+            rootFolderOrFile: '$(rootFolder)'
+            includeRootFolder: false
+            archiveType: zip
+            archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+            replaceExistingArchive: true
+
+        - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          displayName: 'Upload package'
+          artifact: drop
